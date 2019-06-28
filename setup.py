@@ -10,5 +10,6 @@ setup(
     packages=find_packages(),
     license='MIT',
     long_description=open('README.md').read(),
+    include_package_data = True,
     install_requires=['pyqt5', 'requests', 'pint', 'numpy']
 )
