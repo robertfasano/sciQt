@@ -5,11 +5,14 @@
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QComboBox
 from PyQt5.QtCore import Qt
 import json
+import os
 
 class ParameterTable(QTableWidget):
     def __init__(self, parameters = {}):
         QTableWidget.__init__(self)
-        with open('resources/stylesheets/parameter_table.txt', "r") as file:
+        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        stylesheet_path = os.path.join(sciQt_path, 'resources\\stylesheets\\parameter_table.txt')
+        with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
         self.insertColumn(0)
         self.insertColumn(1)
@@ -25,7 +28,7 @@ class ParameterTable(QTableWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff);
 
         self.set_parameters(parameters)
-        
+
     def get_parameters(self):
         params = {}
         for row in range(self.rowCount()):
