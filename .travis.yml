@@ -8,7 +8,7 @@ python:
 sudo: required
 
 addons:
-  apt: 
+  apt:
     packages:
     - libxkbcommon-x11-0
 
@@ -22,7 +22,8 @@ install:
   - sleep 3
 
   - pip install -r requirements.txt
-  - pip install .
+  # - pip install .
+  - python setup.py install
 
 before_script:
   - "herbstluftwm &"
