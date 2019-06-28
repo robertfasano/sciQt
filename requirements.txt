@@ -3,3 +3,4 @@ requests
 pint
 numpy
 pytest-qt
+pytest-xvfb

@@ -19,4 +19,4 @@ install:
 #   - sleep 1
 
 script:
-  - xvfb-run pytest
+  - pytest -s -v
