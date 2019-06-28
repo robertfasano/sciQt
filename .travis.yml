@@ -24,4 +24,5 @@ before_script:
   - sleep 1
 
 script:
-  - pytest -s -v
+  # - pytest -s -v
+  - xvfb-run -a pytest -s -v
