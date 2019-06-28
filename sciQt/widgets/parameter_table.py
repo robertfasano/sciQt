@@ -11,10 +11,6 @@ class ParameterTable(QTableWidget):
     def __init__(self, parameters = {}):
         QTableWidget.__init__(self)
         sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        print(os.listdir(sciQt_path))
-        print(os.listdir(os.path.join(sciQt_path, 'resources')))
-        print(os.listdir(os.path.join(sciQt_path, 'resources/stylesheets/')))
-
         stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/parameter_table.txt')
         with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
