@@ -1,0 +1,7 @@
+pyqt5 
+requests
+abc
+os
+json
+pint
+numpy
