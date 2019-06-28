@@ -1,24 +1,22 @@
-sudo: required
-
 dist: xenial
-services:
-  - xvfb
-
+# services:
+#   - xvfb
 language: python
 python:
   - "3.7"
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y xvfb herbstluftwm
+# before_install:
+  # - sudo apt-get update
+  # - sudo apt-get install -y xvfb herbstluftwm
+  # - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
 
 install:
   - pip install -r requirements.txt
   - pip install .
 
-before_script:
-  - "herbstluftwm &"
-  - sleep 1
+# before_script:
+#   - "herbstluftwm &"
+#   - sleep 1
 
 script:
-  - pytest
+  - xvfb-run pytest
