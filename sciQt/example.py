@@ -1,4 +1,4 @@
-from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame
+from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame, DictTree
 
 class MyDashboard(Dashboard):
     def __init__(self):
@@ -14,6 +14,9 @@ class MyDashboard(Dashboard):
 
         self.table = ParameterTable({'voltage': 0, 'phase': 3.14})
         self.layout.addWidget(self.table)
+
+        tree = DictTree({'levelA': {'level2': {'level3': {'level4': 0}}}, 'level B': 1, 'levelC': {'levelC2': 'y'}})
+        self.layout.addWidget(tree)
 
         self.show()
 
