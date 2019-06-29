@@ -22,5 +22,5 @@ setup(
     long_description=open('README.md').read(),
     package_data={'': extra_files},
     include_package_data = True,
-    install_requires=['pyqt5', 'requests', 'pint', 'numpy']
+    install_requires=['pyqt5', 'requests', 'pint', 'numpy', 'pytest-qt']
 )
