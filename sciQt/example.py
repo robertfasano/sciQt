@@ -1,8 +1,8 @@
-from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame, Application
+from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame
 
 class MyDashboard(Dashboard):
-    def __init__(self, app, addr=None, port=None):
-        Dashboard.__init__(self, app, addr=addr, port=port, title='My Dashboard')
+    def __init__(self):
+        Dashboard.__init__(self, title='My Dashboard')
 
     def buildUI(self):
         frame = Frame(self.layout)                ## create frame for text
@@ -18,6 +18,4 @@ class MyDashboard(Dashboard):
         self.show()
 
 if __name__ == '__main__':
-    ## create application
-    app = Application()
-    dashboard = MyDashboard(app)
+    dashboard = MyDashboard()

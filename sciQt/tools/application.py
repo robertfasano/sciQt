@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 
 def Application():
     app = QApplication.instance()

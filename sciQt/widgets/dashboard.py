@@ -5,6 +5,7 @@ from PyQt5.QtGui import QFontDatabase
 import requests
 import os
 from abc import abstractmethod
+from sciQt import Application
 
 class Frame():
     def __init__(self, parent_layout):
@@ -18,16 +19,14 @@ class Frame():
 
 ## define main window
 class Dashboard(QMainWindow):
-    def __init__(self, app, title='sciQt', addr=None, port=None):
+    def __init__(self, title='sciQt'):
         ''' Args:
                 title (str): window title
                 addr (str): IP address for the backend server
                 port (int): port for the backend server
         '''
+        self.app = Application()
         super(Dashboard, self).__init__()
-        self.app = app
-        self.addr = addr
-        self.port = port
         self.widget = QWidget()
         self.layout = QVBoxLayout(self.widget)
         self.setCentralWidget(self.widget)
