@@ -1,0 +1,16 @@
+QCheckBox::indicator:unchecked {
+    image: url("resources/icons/unchecked.png");
+}
+
+QCheckBox::indicator:checked {
+    image: url("resources/icons/checked.png");
+}
+
+QTableWidget {color:"#000000";
+              font-weight: light;
+              font-family: "Exo 2";
+              font-size: 14px;
+              gridline-color: transparent;
+              border-right-color: transparent;
+              border-left-color: transparent;
+              border-color: transparent;}
