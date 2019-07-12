@@ -23,7 +23,5 @@ class MyDashboard(Dashboard):
         tree = DictTree({'levelA': {'level2': {'level3': {'level4': 0}}}, 'level B': 1, 'levelC': {'levelC2': 'y'}})
         self.layout.addWidget(tree)
 
-        self.show()
-
 if __name__ == '__main__':
     dashboard = MyDashboard()

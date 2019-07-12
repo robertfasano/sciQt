@@ -34,13 +34,19 @@ class Dashboard(QMainWindow):
         ## set window style
         self.setWindowTitle(title)
         QFontDatabase.addApplicationFont('resources/fonts/Exo2-Light.ttf')
-        with open('resources/stylesheets/dashboard.txt', "r") as file:
+
+        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/dashboard.txt')
+        with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
+
         if os.name == 'nt':
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(title)
 
         self.buildUI()
+        self.show()
+
         self.app.exec()
 
     @abstractmethod
