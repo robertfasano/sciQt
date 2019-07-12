@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QLineEdit, QInputDialog
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 import json
 import os
+from sciQt.widgets import DictMenu
+from PyQt5.QtGui import QCursor
 
 class TTLTable(QTableWidget):
     def __init__(self, ttls, sequence=None):
@@ -21,8 +23,37 @@ class TTLTable(QTableWidget):
         self.setRowCount(len(self.TTLs))
         self.setVerticalHeaderLabels(self.TTLs)
 
+        self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+        self.horizontalHeader().customContextMenuRequested.connect(self.headerMenuEvent)
+
         if sequence is not None:
             self.set_sequence(sequence)
+
+    def sizeHint(self):
+        return QSize(self.columnCount()*75+75, self.rowCount()*30+130)
+
+
+    def headerMenuEvent(self, event):
+        col = self.columnAt(event.x())
+        actions = {
+                    'Insert right': lambda: self.insert_timestep(col+1),
+                    'Insert left': lambda: self.insert_timestep(col),
+                    'Delete': lambda: self.delete_timestep(col)
+                    }
+        self.menu = DictMenu('header options', actions)
+        self.menu.popup(QCursor.pos())
+
+
+    def insert_timestep(self, col):
+        self.insertColumn(col)
+        for row in range(len(self.TTLs)):
+            self.add_checkbox(row, col)
+        self.setHorizontalHeaderItem(col, QTableWidgetItem('0'))
+        self.resizeToFit()
+
+    def delete_timestep(self, col):
+        self.removeColumn(col)
+        self.resizeToFit()
 
     def add_checkbox(self, row, col):
         self.setCellWidget(row, col, QCheckBox())
@@ -65,6 +96,12 @@ class TTLTable(QTableWidget):
                     self.cellWidget(j,i).setChecked(False)
 
         self.setHorizontalHeaderLabels([str(step['duration']) for step in sequence])
+        self.resizeToFit()
+
+    def resizeToFit(self):
+        self.resize(self.sizeHint())
+        if self.parent() is not None:
+            self.parent().parent().resize(self.parent().parent().sizeHint())
 
     def apply_stylesheet(self):
         sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -88,5 +125,6 @@ class TTLTable(QTableWidget):
                       border-right-color: transparent;
                       border-left-color: transparent;
                       border-color: transparent;}}
+
         """
         self.setStyleSheet(stylesheet)
