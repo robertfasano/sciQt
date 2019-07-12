@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QSize
 import json
 import os
 from sciQt.widgets import DictMenu
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QFont
 
 class TTLTable(QTableWidget):
     def __init__(self, ttls, sequence=None):
@@ -26,19 +26,62 @@ class TTLTable(QTableWidget):
         self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(self.headerMenuEvent)
 
+        self.verticalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+        self.verticalHeader().customContextMenuRequested.connect(self.verticalHeaderMenuEvent)
+
         if sequence is not None:
             self.set_sequence(sequence)
+
+        self.hold_column = None
 
     def sizeHint(self):
         return QSize(self.columnCount()*(75+self.horizontal_margin)+50, self.rowCount()*(30+self.vertical_margin)+80)
 
+    def hold(self, col):
+        ''' Sets the designated column as the hold column. Passing the same
+            column as the hold column will reset the hold column. '''
+        if col != self.hold_column:
+            self.hold_column = col
+        else:
+            self.hold_column = None
+
+        for i in range(self.columnCount()):
+            if self.hold_column is None:
+                self.horizontalHeaderItem(i).setForeground(Qt.black)
+                self.horizontalHeaderItem(i).setFont(QFont())
+            elif i != self.hold_column:
+                self.horizontalHeaderItem(i).setForeground(Qt.gray)
+                self.horizontalHeaderItem(i).setFont(QFont())
+            else:
+                self.horizontalHeaderItem(i).setForeground(Qt.black)
+                font = QFont()
+                font.setBold(True)
+                self.horizontalHeaderItem(i).setFont(font)
+                self.setColumnHidden(i, False)
 
     def headerMenuEvent(self, event):
         col = self.columnAt(event.x())
         actions = {
                     'Insert right': lambda: self.insert_timestep(col+1),
                     'Insert left': lambda: self.insert_timestep(col),
-                    'Delete': lambda: self.delete_timestep(col)
+                    'Delete': lambda: self.delete_timestep(col),
+                    'Hold': lambda: self.hold(col)
+                    }
+
+        self.menu = DictMenu('header options', actions)
+        self.menu.actions['Hold'].setCheckable(True)
+        self.menu.actions['Hold'].setChecked(col==self.hold_column)
+        self.menu.popup(QCursor.pos())
+
+    def set_row_state(self, row, state):
+        for col in range(self.columnCount()):
+            self.cellWidget(row, col).setChecked(state)
+
+    def verticalHeaderMenuEvent(self, event):
+        row = self.rowAt(event.y())
+        actions = {
+                    'Set high': lambda: self.set_row_state(row, True),
+                    'Set low': lambda: self.set_row_state(row, False)
                     }
         self.menu = DictMenu('header options', actions)
         self.menu.popup(QCursor.pos())
@@ -71,6 +114,8 @@ class TTLTable(QTableWidget):
     def get_sequence(self):
         sequence = []
         for i in range(self.columnCount()):
+            if self.hold_column is not None and self.hold_column != i:
+                continue
             timestep = {'duration': self.horizontalHeaderItem(i).text()}
             ttls = []
             for j in range(self.rowCount()):
