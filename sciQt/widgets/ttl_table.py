@@ -10,10 +10,10 @@ class TTLTable(QTableWidget):
         QTableWidget.__init__(self)
         self.apply_stylesheet()
         self.setShowGrid(False)
-        horizontal_margin = 5
-        vertical_margin = 5
-        self.horizontalHeader().setDefaultSectionSize(75+horizontal_margin)
-        self.verticalHeader().setDefaultSectionSize(30+vertical_margin)
+        self.horizontal_margin = 5
+        self.vertical_margin = 5
+        self.horizontalHeader().setDefaultSectionSize(75+self.horizontal_margin)
+        self.verticalHeader().setDefaultSectionSize(30+self.vertical_margin)
         cols = 4
         self.setColumnCount(cols)
         self.setSelectionMode(self.NoSelection)
@@ -30,7 +30,7 @@ class TTLTable(QTableWidget):
             self.set_sequence(sequence)
 
     def sizeHint(self):
-        return QSize(self.columnCount()*75+75, self.rowCount()*30+130)
+        return QSize(self.columnCount()*(75+self.horizontal_margin)+50, self.rowCount()*(30+self.vertical_margin)+80)
 
 
     def headerMenuEvent(self, event):
