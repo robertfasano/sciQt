@@ -6,10 +6,7 @@ import os
 class TTLTable(QTableWidget):
     def __init__(self, ttls, sequence=None):
         QTableWidget.__init__(self)
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/ttl_table.txt')
-        with open(stylesheet_path, "r") as file:
-            self.setStyleSheet(file.read())
+        self.apply_stylesheet()
         self.setShowGrid(False)
         horizontal_margin = 5
         vertical_margin = 5
@@ -68,3 +65,28 @@ class TTLTable(QTableWidget):
                     self.cellWidget(j,i).setChecked(False)
 
         self.setHorizontalHeaderLabels([str(step['duration']) for step in sequence])
+
+    def apply_stylesheet(self):
+        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        unchecked_icon_path = os.path.join(sciQt_path, 'resources/icons/unchecked.png').replace('\\', '/')
+        checked_icon_path = os.path.join(sciQt_path, 'resources/icons/checked.png').replace('\\', '/')
+        stylesheet = f"""
+
+        QCheckBox::indicator:unchecked {{
+            image: url({unchecked_icon_path});
+        }}
+
+        QCheckBox::indicator:checked {{
+            image: url({checked_icon_path});
+        }}
+
+        QTableWidget {{color:"#000000";
+                      font-weight: light;
+                      font-family: "Exo 2";
+                      font-size: 14px;
+                      gridline-color: transparent;
+                      border-right-color: transparent;
+                      border-left-color: transparent;
+                      border-color: transparent;}}
+        """
+        self.setStyleSheet(stylesheet)
