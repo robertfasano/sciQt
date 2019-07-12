@@ -26,12 +26,7 @@ class TTLTable(QTableWidget):
 
         if sequence is not None:
             self.set_sequence(sequence)
-        # for col in range(cols):
-        #     for row in range(len(self.TTLs)):
-        #         self.add_checkbox(row, col)
-        #
-        # sequence = [{'duration': 1, 'TTL': ['A0']}, {'duration': 0.5, 'TTL': ['A1']}]
-        # self.set_sequence(sequence)
+
     def add_checkbox(self, row, col):
         self.setCellWidget(row, col, QCheckBox())
 

@@ -1,2 +1,2 @@
 from .tools import Application
-from .widgets import UnitEdit, DictMenu, ParameterTable, Dashboard, Frame, TTLTable
+from .widgets import UnitEdit, DictMenu, ParameterTable, Dashboard, Frame, TTLTable, DictTree

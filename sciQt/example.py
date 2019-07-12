@@ -1,4 +1,4 @@
-from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame, TTLTable
+from sciQt import Dashboard, UnitEdit, DictMenu, ParameterTable, Frame, TTLTable, DictTree
 
 class MyDashboard(Dashboard):
     def __init__(self):
@@ -19,6 +19,9 @@ class MyDashboard(Dashboard):
         sequence = [{'duration': 0.2, 'TTL': ['A0']}, {'duration': 0.5, 'TTL': ['A1']}]
         self.ttl_table = TTLTable(ttls, sequence=sequence)
         self.layout.addWidget(self.ttl_table)
+
+        tree = DictTree({'levelA': {'level2': {'level3': {'level4': 0}}}, 'level B': 1, 'levelC': {'levelC2': 'y'}})
+        self.layout.addWidget(tree)
 
         self.show()
 
