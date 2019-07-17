@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QLabel, QDialogButtonBox, QGridLayout
 from PyQt5.QtCore import Qt
 
-class ParameterDialog(QDialog):
+class DictDialog(QDialog):
     def __init__(self, parameters):
         QDialog.__init__(self)
-        self.setWindowTitle('Edit timestep')
+        self.setWindowTitle('Edit parameters')
         layout = QGridLayout(self)
         self.edits = {}
         for row, key in enumerate(parameters):
@@ -21,7 +21,7 @@ class ParameterDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
-    def get_event(self):
+    def get_parameters(self):
         ''' Open a window, wait for user input, and return the result. '''
         result = self.exec_()
         parameters = {}
