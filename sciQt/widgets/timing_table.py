@@ -159,7 +159,7 @@ class TimingTable(QTableWidget):
         old_name = self.horizontalHeaderItem(index).text().split('\n')[0]
 
         parameters = {'Name': old_name, 'Duration': old_duration}
-        updates, updated = ParameterDialog(self, parameters).get_event()
+        updates, updated = ParameterDialog(parameters).get_event()
         string = f"{updates['Name']}\n{updates['Duration']}"
         if updated:
             self.horizontalHeaderItem(index).setText(string)
