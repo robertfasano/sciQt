@@ -1,8 +1,8 @@
 import os
-from PyQt5.QtWidgets import QTableWidget, QTabWidget, QInputDialog, QLineEdit, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QTabWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
-from sciQt.widgets import DictMenu, TTLTable, DACTable, DDSTable
+from sciQt.widgets import DictMenu, TTLTable, DACTable, DDSTable, ParameterDialog
 
 class CustomHeader(QHeaderView):
     def __init__(self, table):
@@ -11,6 +11,7 @@ class CustomHeader(QHeaderView):
         self.customContextMenuRequested.connect(table.context_menu)
         self.sectionDoubleClicked.connect(table.update_duration)
         self.setDefaultSectionSize(75+5)
+        self.setFixedHeight(35)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
     def clone(self):
@@ -42,7 +43,7 @@ class TimingTable(QTableWidget):
         if dds is not None:
             self.dds_table = DDSTable(self, dds)
             self.tabs.addTab(self.dds_table, 'DDS')
-            
+
     @staticmethod
     def apply_stylesheet(table):
         ''' Applies a generic stylesheet to a target child table. '''
@@ -82,7 +83,11 @@ class TimingTable(QTableWidget):
             a master sequence. '''
         sequence = []
         for col in range(self.columnCount()):
-            sequence.append({'duration': self.horizontalHeaderItem(col)})
+            duration = float(self.horizontalHeaderItem(col).text().split('\n')[1])
+            name = self.horizontalHeaderItem(col).text().split('\n')[0]
+            sequence.append({'duration': duration})
+            if name != '':
+                sequence[-1]['name'] = name
         for child in self.children:
             subsequence = child.get_sequence()
             for i, step in enumerate(subsequence):
@@ -114,7 +119,7 @@ class TimingTable(QTableWidget):
     def insert_timestep(self, col):
         ''' Inserts a timestep after the specified column. '''
         self.insertColumn(col)
-        self.setHorizontalHeaderItem(col, QTableWidgetItem('0'))
+        self.setHorizontalHeaderItem(col, QTableWidgetItem('\n0'))
 
     def register(self, child):
         ''' Registers a child widget to inherit from this one. '''
@@ -129,7 +134,16 @@ class TimingTable(QTableWidget):
     def set_sequence(self, sequence):
         ''' Applies a json-formatted sequence to all child tables. '''
         self.setColumnCount(len(sequence))
-        self.setHorizontalHeaderLabels([str(step['duration']) for step in sequence])
+        labels = []
+        for step in sequence:
+            header = ''
+            if 'name' in step:
+                header += step['name']
+            header += '\n' + str(step['duration'])
+            labels.append(header)
+        # self.setHorizontalHeaderLabels(['\n'+str(step['duration']) for step in sequence])
+        self.setHorizontalHeaderLabels(labels)
+
         for child in self.children:
             child.set_sequence(sequence)
         self.sequence = sequence
@@ -141,7 +155,11 @@ class TimingTable(QTableWidget):
 
     def update_duration(self, index):
         ''' Popup for timestep duration changes. '''
-        old_header = self.horizontalHeaderItem(index).text()
-        new_header, updated = QInputDialog.getText(self, 'Duration', '', QLineEdit.Normal, old_header)
+        old_duration = self.horizontalHeaderItem(index).text().split('\n')[1]
+        old_name = self.horizontalHeaderItem(index).text().split('\n')[0]
+
+        parameters = {'Name': old_name, 'Duration': old_duration}
+        updates, updated = ParameterDialog(self, parameters).get_event()
+        string = f"{updates['Name']}\n{updates['Duration']}"
         if updated:
-            self.horizontalHeaderItem(index).setText(new_header)
+            self.horizontalHeaderItem(index).setText(string)

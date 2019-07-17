@@ -29,8 +29,7 @@ class IOTable(QTableWidget):
     def get_sequence(self):
         sequence = []
         for col in range(self.columnCount()):
-            timestep = {'duration': self.model.headerData(col, Qt.Horizontal)}
-
+            timestep = {}
             channels = {}
             if self.io_type in ['TTL', 'ADC']:
                 channels = []
