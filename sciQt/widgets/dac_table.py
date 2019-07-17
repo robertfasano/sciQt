@@ -9,6 +9,14 @@ class DACButton(QPushButton):
         QPushButton.__init__(self)
         self.clicked.connect(self.create_event)
         self.setFixedSize(75, 30)
+        self.setProperty('active', False)
+        style = '''
+        QPushButton:flat[active=true]{background-color: #00CCCC; border:1px solid black;}
+        QPushButton:flat[active=false]{background-color: #999999; border:1px solid black;}
+        '''
+        self.setStyleSheet(style)
+        self.setFlat(True)
+        self.setAutoFillBackground(True)
         self.voltage = ''
 
     def create_event(self):
@@ -17,7 +25,11 @@ class DACButton(QPushButton):
         voltage, ok = dialog.get_event()
         if not ok:
             return
+
+        self.setProperty('active', voltage != '')
         self.setText(f'{voltage}')
+
+        self.setStyle(self.style())
 
     class Dialog(QDialog):
         ''' A custom dialog box allowing voltage specification. '''
@@ -26,7 +38,6 @@ class DACButton(QPushButton):
             self.parent = parent
             self.setWindowTitle('New DAC event')
             layout = QVBoxLayout(self)
-
             self.input = LabeledEdit('Voltage', self.parent.voltage)
             layout.addWidget(self.input)
 
@@ -121,4 +132,7 @@ class DACTable(QTableWidget):
                 if 'DAC' in step:
                     if dac in step['DAC']:
                         v = step['DAC'][dac]
-                        self.cellWidget(j, i).setText(f'{v}')
+                        widget = self.cellWidget(j, i)
+                        widget.setText(f'{v}')
+                        widget.setProperty('active', True)
+                        widget.setStyle(widget.style())
