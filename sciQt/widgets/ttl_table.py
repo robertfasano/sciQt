@@ -1,41 +1,36 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QLineEdit, QInputDialog, QHeaderView, QApplication
-from PyQt5.QtCore import Qt, QSize
-import json
-import os
-from sciQt.widgets import DictMenu
+from PyQt5.QtWidgets import QTableWidget, QCheckBox, QLineEdit, QInputDialog, QHeaderView
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
+from sciQt.widgets import DictMenu
 
 class TTLTable(QTableWidget):
+    ''' A table of checkboxes whose state can be mapped to and from a json-formatted
+        sequence representation. '''
     def __init__(self, timing_table, ttls):
         QTableWidget.__init__(self)
-        self.apply_stylesheet()
         self.setShowGrid(False)
         self.vertical_margin = 5
         self.verticalHeader().setDefaultSectionSize(30+self.vertical_margin)
         self.setSelectionMode(self.NoSelection)
-        self.verticalHeader().sectionDoubleClicked.connect(self.changeVerticalHeader)
-        self.label_width = 90
+        # self.verticalHeader().sectionDoubleClicked.connect(self.rename_channel)
+        self.label_width = timing_table.label_width
         self.verticalHeader().setFixedWidth(self.label_width)
         self.TTLs = ttls
         self.setRowCount(len(self.TTLs))
         self.setVerticalHeaderLabels(self.TTLs)
         self.verticalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-        self.verticalHeader().customContextMenuRequested.connect(self.verticalHeaderMenuEvent)
+        self.verticalHeader().customContextMenuRequested.connect(self.row_context_menu)
 
         self.timing_table = timing_table
         self.timing_table.register(self)   # apply sequence from master table
 
-        QApplication.processEvents() # necessary to align inherited horizontal header with columns
-
-    def sizeHint(self):
-        return QSize(self.columnCount()*(75+self.timing_table.horizontal_margin)+60+self.label_width,
-                     self.rowCount()*(30+self.vertical_margin)+80)
-
     def set_row_state(self, row, state):
+        ''' Set all checkboxes in the specified row to a state (True or False) '''
         for col in range(self.columnCount()):
             self.cellWidget(row, col).setChecked(state)
 
-    def verticalHeaderMenuEvent(self, event):
+    def row_context_menu(self, event):
+        ''' Handle right-click action on a row. '''
         row = self.rowAt(event.y())
         actions = {
                     'Set high': lambda: self.set_row_state(row, True),
@@ -45,25 +40,27 @@ class TTLTable(QTableWidget):
         self.menu.popup(QCursor.pos())
 
     def insert_timestep(self, col):
+        ''' Add a new column of checkboxes '''
         self.insertColumn(col)
         for row in range(len(self.TTLs)):
             self.setCellWidget(row, col, QCheckBox())
-        self.resizeToFit()
 
     def delete_timestep(self, col):
+        ''' Delete a column '''
         self.removeColumn(col)
-        self.resizeToFit()
 
-    def changeVerticalHeader(self, index):
+    def rename_channel(self, index):
+        ''' Open a dialog box to allow a channel to be labeled with extra metadata '''
         channel = self.verticalHeaderItem(index).text().split(':')[0]
-        newHeader, ok = QInputDialog.getText(self, 'Rename TTL channel', '', QLineEdit.Normal,'')
-        if ok:
+        newHeader, updated = QInputDialog.getText(self, 'Rename TTL channel', '', QLineEdit.Normal,'')
+        if updated:
             if newHeader != '':
                 self.verticalHeaderItem(index).setText(channel +': '+newHeader)
             else:
                 self.verticalHeaderItem(index).setText(channel)
 
     def get_sequence(self):
+        ''' Returns a json-formatted sequence from the checkbox states. '''
         sequence = []
         for i in range(self.columnCount()):
             if self.timing_table.hold_column is not None and self.timing_table.hold_column != i:
@@ -81,6 +78,10 @@ class TTLTable(QTableWidget):
         return sequence
 
     def set_sequence(self, sequence):
+        ''' Maps a json-formatted sequence to checkbox states. For example, if
+            the sequence contains a timestep {'duration': 1, 'TTL' ['A1']}, then
+            the checkbox in the column corresponding to the step and the row
+            corresponding to TTL A1 will be checked. '''
         self.setColumnCount(len(sequence))
 
         for i, step in enumerate(sequence):
@@ -90,36 +91,3 @@ class TTLTable(QTableWidget):
                     self.cellWidget(j,i).setChecked(True)
                 else:
                     self.cellWidget(j,i).setChecked(False)
-
-        # self.resizeToFit()
-
-    def resizeToFit(self):
-        self.resize(self.sizeHint())
-        if self.parent() is not None:
-            self.parent().parent().resize(self.parent().parent().sizeHint())
-
-    def apply_stylesheet(self):
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        unchecked_icon_path = os.path.join(sciQt_path, 'resources/icons/unchecked.png').replace('\\', '/')
-        checked_icon_path = os.path.join(sciQt_path, 'resources/icons/checked.png').replace('\\', '/')
-        stylesheet = f"""
-
-        QCheckBox::indicator:unchecked {{
-            image: url({unchecked_icon_path});
-        }}
-
-        QCheckBox::indicator:checked {{
-            image: url({checked_icon_path});
-        }}
-
-        QTableWidget {{color:"#000000";
-                      font-weight: light;
-                      font-family: "Exo 2";
-                      font-size: 14px;
-                      gridline-color: transparent;
-                      border-right-color: transparent;
-                      border-left-color: transparent;
-                      border-color: transparent;}}
-
-        """
-        self.setStyleSheet(stylesheet)

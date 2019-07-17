@@ -1,24 +1,25 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QLineEdit, QInputDialog, QPushButton, QDialog, QVBoxLayout, QDialogButtonBox
-from PyQt5.QtCore import Qt, QSize
-import json
-import os
-from sciQt.widgets import DictMenu, LabeledEdit, LabeledComboBox
-from PyQt5.QtGui import QCursor, QFont
+from PyQt5.QtWidgets import QTableWidget, QPushButton, QDialog, QVBoxLayout, QDialogButtonBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
+from sciQt.widgets import DictMenu, LabeledEdit
 
 class DACButton(QPushButton):
+    ''' A widget which allows specification of a voltage via a popup dialog. '''
     def __init__(self):
         QPushButton.__init__(self)
-        self.clicked.connect(self.createEvent)
+        self.clicked.connect(self.create_event)
         self.setFixedSize(75, 30)
 
-    def createEvent(self, parent = None):
+    def create_event(self):
+        ''' Open a dialog to allow user input of a new voltage. '''
         dialog = self.Dialog(self)
-        voltage, ok = dialog.getEvent()
+        voltage, ok = dialog.get_event()
         if not ok:
             return
         self.setText(f'{voltage}')
 
     class Dialog(QDialog):
+        ''' A custom dialog box allowing voltage specification. '''
         def __init__(self, parent):
             QDialog.__init__(self)
             self.setWindowTitle('New DAC event')
@@ -35,35 +36,36 @@ class DACButton(QPushButton):
             buttons.rejected.connect(self.reject)
             layout.addWidget(buttons)
 
-        def getEvent(self, parent = None):
+        def get_event(self):
+            ''' Open a window, wait for user input, and return the result. '''
             result = self.exec_()
             return (self.input.text(), result == QDialog.Accepted)
 
 class DACTable(QTableWidget):
+    ''' A table of buttons allowing specification of voltages for each DAC
+        in the passed "dacs" list. '''
     def __init__(self, timing_table, dacs, sequence=None):
         QTableWidget.__init__(self)
         self.dacs = dacs
-        self.apply_stylesheet()
         self.setShowGrid(False)
         self.horizontal_margin = 5
         self.vertical_margin = 5
         self.verticalHeader().setDefaultSectionSize(30+self.vertical_margin)
         self.setSelectionMode(self.NoSelection)
-        self.label_width = 90
+        self.label_width = timing_table.label_width
         self.verticalHeader().setFixedWidth(self.label_width)
 
         self.setRowCount(len(self.dacs))
         self.setVerticalHeaderLabels(self.dacs)
         self.verticalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-        self.verticalHeader().customContextMenuRequested.connect(self.headerMenuEvent)
+        self.verticalHeader().customContextMenuRequested.connect(self.row_context_menu)
 
         self.hide_inactive = False
 
         self.timing_table = timing_table
         timing_table.register(self)
 
-    def headerMenuEvent(self, event):
-        col = self.columnAt(event.x())
+    def row_context_menu(self, event):
         actions = {
                     'Hide inactive': lambda: self.hide_inactive_rows(not self.hide_inactive)
                     }
@@ -80,7 +82,6 @@ class DACTable(QTableWidget):
 
     def delete_timestep(self, last):
         self.removeColumn(last)
-        self.resizeToFit()
 
     def hide_inactive_rows(self, hidden):
         self.hide_inactive = hidden
@@ -118,28 +119,3 @@ class DACTable(QTableWidget):
                     if dac in step['DAC']:
                         v = step['DAC'][dac]
                         self.cellWidget(j, i).setText(f'{v}')
-
-        self.resizeToFit()
-
-    def resizeToFit(self):
-        self.resize(self.sizeHint())
-        if self.parent() is not None:
-            self.parent().parent().resize(self.parent().parent().sizeHint())
-
-    def sizeHint(self):
-        return QSize(self.columnCount()*(75+self.horizontal_margin)+50+self.label_width, self.rowCount()*(30+self.vertical_margin)+80)
-
-    def apply_stylesheet(self):
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        stylesheet = f"""
-        QTableWidget {{color:"#000000";
-                      font-weight: light;
-                      font-family: "Exo 2";
-                      font-size: 14px;
-                      gridline-color: transparent;
-                      border-right-color: transparent;
-                      border-left-color: transparent;
-                      border-color: transparent;}}
-
-        """
-        self.setStyleSheet(stylesheet)

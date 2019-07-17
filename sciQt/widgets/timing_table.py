@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QTableWidget, QInputDialog, QLineEdit, QTableWidgetItem, QHeaderView, QApplication
-from PyQt5.QtCore import Qt
+import os
+from PyQt5.QtWidgets import QTableWidget, QInputDialog, QLineEdit, QTableWidgetItem, QHeaderView
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
 from sciQt.widgets import DictMenu
 
@@ -7,26 +8,37 @@ class CustomHeader(QHeaderView):
     def __init__(self, table):
         QHeaderView.__init__(self, Qt.Horizontal)
         self.table = table
-        self.customContextMenuRequested.connect(table.headerMenuEvent)
-        self.sectionDoubleClicked.connect(table.changeHorizontalHeader)
+        self.customContextMenuRequested.connect(table.context_menu)
+        self.sectionDoubleClicked.connect(table.update_duration)
         self.setDefaultSectionSize(75+5)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
     def clone(self):
-        newHeader = CustomHeader(self.table)
-        newHeader.setModel(self.model())
-        return newHeader
+        ''' Returns a new header sharing the same model. '''
+        new_header = CustomHeader(self.table)
+        new_header.setModel(self.model())
+        return new_header
 
 class TimingTable(QTableWidget):
+    ''' A master timing table which shares timestep information and basic
+        functionalities with child i/o tables (e.g. TTLTable). '''
     def __init__(self, sequence):
         QTableWidget.__init__(self)
         self.children = []
         self.set_sequence(sequence)
         self.horizontal_margin = 5
+        self.label_width = 30
         self.setHorizontalHeader(CustomHeader(self))
         self.hold_column = None
+        self.menu = None
+
+    def sizeHint(self):
+        ''' Returns a size scaled based on number of columns. '''
+        return QSize(self.columnCount()*(75+self.horizontal_margin)+45+self.label_width,
+                     400)
 
     def set_sequence(self, sequence):
+        ''' Applies a json-formatted sequence to all child tables. '''
         self.setColumnCount(len(sequence))
         self.setHorizontalHeaderLabels([str(step['duration']) for step in sequence])
         for child in self.children:
@@ -34,6 +46,8 @@ class TimingTable(QTableWidget):
         self.sequence = sequence
 
     def get_sequence(self):
+        ''' Retrieves subsequences from all child tables and aggregates into
+            a master sequence. '''
         sequence = []
         for col in range(self.columnCount()):
             sequence.append({'duration': self.horizontalHeaderItem(col)})
@@ -51,12 +65,15 @@ class TimingTable(QTableWidget):
         self.model().columnsInserted.connect(lambda index, first, last: child.insert_timestep(last))
         self.model().columnsRemoved.connect(lambda index, first, last: child.delete_timestep(last))
         child.set_sequence(self.sequence)
+        self.apply_stylesheet(child)
 
     def insert_timestep(self, col):
+        ''' Inserts a timestep after the specified column. '''
         self.insertColumn(col)
         self.setHorizontalHeaderItem(col, QTableWidgetItem('0'))
 
     def delete_timestep(self, col):
+        ''' Deletes a timestep. '''
         self.removeColumn(col)
 
     def hold(self, col):
@@ -81,22 +98,50 @@ class TimingTable(QTableWidget):
                 self.horizontalHeaderItem(i).setFont(font)
                 self.setColumnHidden(i, False)
 
-    def headerMenuEvent(self, event):
+    def context_menu(self, event):
+        ''' Handles right-click menu on header items. '''
         col = self.columnAt(event.x())
-        actions = {
-                    'Insert right': lambda: self.insert_timestep(col+1),
-                    'Insert left': lambda: self.insert_timestep(col),
-                    'Delete': lambda: self.delete_timestep(col),
-                    'Hold': lambda: self.hold(col)
-                    }
+        actions = {'Insert right': lambda: self.insert_timestep(col+1),
+                   'Insert left': lambda: self.insert_timestep(col),
+                   'Delete': lambda: self.delete_timestep(col),
+                   'Hold': lambda: self.hold(col)}
 
         self.menu = DictMenu('header options', actions)
         self.menu.actions['Hold'].setCheckable(True)
         self.menu.actions['Hold'].setChecked(col==self.hold_column)
         self.menu.popup(QCursor.pos())
 
-    def changeHorizontalHeader(self, index):
-        oldHeader = self.horizontalHeaderItem(index).text()
-        newHeader, ok = QInputDialog.getText(self, 'Duration', '', QLineEdit.Normal, oldHeader)
-        if ok:
-            self.horizontalHeaderItem(index).setText(newHeader)
+    def update_duration(self, index):
+        ''' Popup for timestep duration changes. '''
+        old_header = self.horizontalHeaderItem(index).text()
+        new_header, updated = QInputDialog.getText(self, 'Duration', '', QLineEdit.Normal, old_header)
+        if updated:
+            self.horizontalHeaderItem(index).setText(new_header)
+
+    @staticmethod
+    def apply_stylesheet(table):
+        ''' Applies a generic stylesheet to a target child table. '''
+        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        unchecked_icon_path = os.path.join(sciQt_path, 'resources/icons/unchecked.png').replace('\\', '/')
+        checked_icon_path = os.path.join(sciQt_path, 'resources/icons/checked.png').replace('\\', '/')
+        stylesheet = f"""
+
+        QCheckBox::indicator:unchecked {{
+            image: url({unchecked_icon_path});
+        }}
+
+        QCheckBox::indicator:checked {{
+            image: url({checked_icon_path});
+        }}
+
+        QTableWidget {{color:"#000000";
+                      font-weight: light;
+                      font-family: "Exo 2";
+                      font-size: 14px;
+                      gridline-color: transparent;
+                      border-right-color: transparent;
+                      border-left-color: transparent;
+                      border-color: transparent;}}
+
+        """
+        table.setStyleSheet(stylesheet)
