@@ -9,6 +9,7 @@ class DACButton(QPushButton):
         QPushButton.__init__(self)
         self.clicked.connect(self.create_event)
         self.setFixedSize(75, 30)
+        self.voltage = ''
 
     def create_event(self):
         ''' Open a dialog to allow user input of a new voltage. '''
@@ -22,10 +23,11 @@ class DACButton(QPushButton):
         ''' A custom dialog box allowing voltage specification. '''
         def __init__(self, parent):
             QDialog.__init__(self)
+            self.parent = parent
             self.setWindowTitle('New DAC event')
             layout = QVBoxLayout(self)
 
-            self.input = LabeledEdit('Voltage', '')
+            self.input = LabeledEdit('Voltage', self.parent.voltage)
             layout.addWidget(self.input)
 
             # OK and Cancel buttons
@@ -39,7 +41,8 @@ class DACButton(QPushButton):
         def get_event(self):
             ''' Open a window, wait for user input, and return the result. '''
             result = self.exec_()
-            return (self.input.text(), result == QDialog.Accepted)
+            self.parent.voltage = self.input.text()
+            return (self.parent.voltage, result == QDialog.Accepted)
 
 class DACTable(QTableWidget):
     ''' A table of buttons allowing specification of voltages for each DAC
