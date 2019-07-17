@@ -35,7 +35,7 @@ class Dashboard(QMainWindow):
         self.setWindowTitle(title)
         QFontDatabase.addApplicationFont('resources/fonts/Exo2-Light.ttf')
 
-        stylesheet_path = sciQt_path + '/resources/stylesheets/dashboard.txt')
+        stylesheet_path = sciQt_path + '/resources/stylesheets/dashboard.txt'
         with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
 
