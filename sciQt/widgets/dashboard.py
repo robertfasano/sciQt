@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFontDatabase
 import requests
 import os
 from abc import abstractmethod
-from sciQt import Application
+from sciQt import Application, path as sciQt_path
 
 class Frame():
     def __init__(self, parent_layout):
@@ -35,8 +35,7 @@ class Dashboard(QMainWindow):
         self.setWindowTitle(title)
         QFontDatabase.addApplicationFont('resources/fonts/Exo2-Light.ttf')
 
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/dashboard.txt')
+        stylesheet_path = sciQt_path + '/resources/stylesheets/dashboard.txt')
         with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
 
