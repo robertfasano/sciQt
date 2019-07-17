@@ -1,7 +1,7 @@
 from sciQt import DACTable, Application, TimingTable
 import numpy as np
 
-def test_ttl_table_set_sequence(qtbot):
+def test_dac_table_set_sequence(qtbot):
     dacs =  [f'A{i}' for i in range(32)]
     sequence = [{'duration': 0.2, 'DAC': {'A0': 1}}, {'duration': 0.5, 'TTL': ['A1']}]
     timing_table = TimingTable(sequence)
