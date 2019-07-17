@@ -1,8 +1,8 @@
 import os
-from PyQt5.QtWidgets import QTableWidget, QInputDialog, QLineEdit, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QTabWidget, QInputDialog, QLineEdit, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
-from sciQt.widgets import DictMenu
+from sciQt.widgets import DictMenu, TTLTable, DACTable, DDSTable
 
 class CustomHeader(QHeaderView):
     def __init__(self, table):
@@ -22,7 +22,7 @@ class CustomHeader(QHeaderView):
 class TimingTable(QTableWidget):
     ''' A master timing table which shares timestep information and basic
         functionalities with child i/o tables (e.g. TTLTable). '''
-    def __init__(self, sequence):
+    def __init__(self, sequence, ttls=None, dacs=None, dds=None):
         QTableWidget.__init__(self)
         self.children = []
         self.set_sequence(sequence)
@@ -32,6 +32,17 @@ class TimingTable(QTableWidget):
         self.hold_column = None
         self.menu = None
 
+        self.tabs = QTabWidget()
+        if ttls is not None:
+            self.ttl_table = TTLTable(self, ttls)
+            self.tabs.addTab(self.ttl_table, 'TTL')
+        if dacs is not None:
+            self.dac_table = DACTable(self, dacs)
+            self.tabs.addTab(self.dac_table, 'DAC')
+        if dds is not None:
+            self.dds_table = DDSTable(self, dds)
+            self.tabs.addTab(self.dds_table, 'DDS')
+            
     @staticmethod
     def apply_stylesheet(table):
         ''' Applies a generic stylesheet to a target child table. '''
