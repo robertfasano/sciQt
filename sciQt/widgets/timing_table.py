@@ -27,7 +27,7 @@ class TimingTable(QTableWidget):
         self.children = []
         self.set_sequence(sequence)
         self.horizontal_margin = 5
-        self.label_width = 30
+        self.label_width = 35
         self.setHorizontalHeader(CustomHeader(self))
         self.hold_column = None
         self.menu = None
