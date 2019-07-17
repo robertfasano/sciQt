@@ -7,4 +7,5 @@ from .labeled_widgets import LabeledEdit, LabeledComboBox
 from .ttl_table import TTLTable
 from .timing_table import TimingTable
 from .dac_table import DACTable
+from .dds_table import DDSTable
 from .dict_tree import DictTree
