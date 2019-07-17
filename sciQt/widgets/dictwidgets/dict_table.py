@@ -7,11 +7,11 @@ from PyQt5.QtCore import Qt
 import json
 import os
 
-class ParameterTable(QTableWidget):
+class DictTable(QTableWidget):
     def __init__(self, parameters = {}):
         QTableWidget.__init__(self)
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/parameter_table.txt')
+        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+        stylesheet_path = os.path.join(sciQt_path, 'resources/stylesheets/dict_table.txt')
         with open(stylesheet_path, "r") as file:
             self.setStyleSheet(file.read())
         self.insertColumn(0)

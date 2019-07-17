@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
-from sciQt.widgets import LabeledEdit, IOTable, IOButton, DictDialog
+from sciQt.widgets import LabeledEdit, DictDialog
+from sciQt.widgets.timing import IOTable, IOButton
 
 class DDSButton(IOButton):
     ''' A widget which allows specification of a frequency and attenuation via a popup dialog. '''

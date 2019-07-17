@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QCursor
-from sciQt.widgets import DictMenu, IOTable, IOButton
+from sciQt.widgets import DictMenu
+from sciQt.widgets.timing import IOTable, IOButton
 
 class TTLButton(IOButton):
     def __init__(self, channel):

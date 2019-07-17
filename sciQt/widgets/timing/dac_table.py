@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
-from sciQt.widgets import LabeledEdit, IOTable, IOButton, DictDialog
+from sciQt.widgets import LabeledEdit, DictDialog
+from sciQt.widgets.timing import IOTable, IOButton
 
 class DACButton(IOButton):
     ''' A widget which allows specification of a voltage via a popup dialog. '''

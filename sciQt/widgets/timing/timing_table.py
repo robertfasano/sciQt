@@ -2,7 +2,8 @@ import os
 from PyQt5.QtWidgets import QTableWidget, QTabWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
-from sciQt.widgets import DictMenu, TTLTable, DACTable, DDSTable, DictDialog
+from sciQt.widgets import DictMenu, DictDialog
+from sciQt.widgets.timing import TTLTable, DACTable, DDSTable
 
 class CustomHeader(QHeaderView):
     def __init__(self, table):
