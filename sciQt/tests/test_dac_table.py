@@ -7,8 +7,9 @@ def test_dac_table_set_sequence(qtbot):
     timing_table = TimingTable(sequence)
     table = DACTable(timing_table, dacs)
 
-    get_sequence = table.get_sequence()
+    get_sequence = timing_table.get_sequence()
+
     for i, step in enumerate(sequence):
-        assert str(step['duration']) == get_sequence[i]['duration']
+        assert step['duration'] == get_sequence[i]['duration']
         if 'DAC' in step:
             assert step['DAC'] == get_sequence[i]['DAC']

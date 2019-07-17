@@ -6,6 +6,6 @@ def test_ttl_table_set_sequence(qtbot):
     sequence = [{'duration': 0.2, 'TTL': ['A0']}, {'duration': 0.5, 'TTL': ['A1']}]
     timing_table = TimingTable(sequence)
     table = TTLTable(timing_table, ttls)
-    get_sequence = table.get_sequence()
+    get_sequence = timing_table.get_sequence()
     for i, step in enumerate(sequence):
-        assert str(step['duration']) == get_sequence[i]['duration']
+        assert step['duration'] == get_sequence[i]['duration']

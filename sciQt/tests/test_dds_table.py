@@ -7,9 +7,9 @@ def test_dds_table_set_sequence(qtbot):
     timing_table = TimingTable(sequence)
     table = DDSTable(timing_table, dds)
 
-    get_sequence = table.get_sequence()
+    get_sequence = timing_table.get_sequence()
     print(get_sequence)
     for i, step in enumerate(sequence):
-        assert str(step['duration']) == get_sequence[i]['duration']
+        assert step['duration'] == get_sequence[i]['duration']
         if 'DDS' in step:
             assert step['DDS'] == get_sequence[i]['DDS']
