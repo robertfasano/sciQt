@@ -37,6 +37,18 @@ class TTLTable(QTableWidget):
 
         self.timing_table = timing_table
         self.timing_table.register(self)   # apply sequence from master table
+        self.hide_inactive = False
+
+    def hide_inactive_rows(self, hidden):
+        self.hide_inactive = hidden
+        for row in range(self.rowCount()):
+            inactive = True
+            for col in range(self.columnCount()):
+                if self.cellWidget(row, col).isChecked():
+                    inactive = False
+            self.setRowHidden(row, False)
+            if inactive:
+                self.setRowHidden(row, hidden)
 
     def set_row_state(self, row, state):
         ''' Set all checkboxes in the specified row to a state (True or False) '''
@@ -48,9 +60,12 @@ class TTLTable(QTableWidget):
         row = self.rowAt(event.y())
         actions = {
                     'Set high': lambda: self.set_row_state(row, True),
-                    'Set low': lambda: self.set_row_state(row, False)
+                    'Set low': lambda: self.set_row_state(row, False),
+                    'Hide inactive': lambda: self.hide_inactive_rows(not self.hide_inactive)
                     }
         self.menu = DictMenu('header options', actions)
+        self.menu.actions['Hide inactive'].setCheckable(True)
+        self.menu.actions['Hide inactive'].setChecked(self.hide_inactive)
         self.menu.popup(QCursor.pos())
 
     def insert_timestep(self, col):
