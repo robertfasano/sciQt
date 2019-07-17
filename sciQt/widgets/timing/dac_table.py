@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
 from sciQt.widgets import LabeledEdit, DictDialog
 from sciQt.widgets.timing import IOTable, IOButton
+from sciQt.tools import parse_units
+
+
 
 class DACButton(IOButton):
     ''' A widget which allows specification of a voltage via a popup dialog. '''
@@ -23,23 +26,22 @@ class DACButton(IOButton):
 
     def get_state(self):
         if self.state != {}:
-            return {self.channel: self.state['voltage']}
+            magnitude, voltage = parse_units(self.state['voltage'], base_unit='V')
+            return {self.channel: magnitude}
         else:
             return {}
 
     def set_state(self, state):
         ''' Takes a float-valued voltage and stores in a state dictionary '''
+        string = ''
         if state == '':
             self.state = {}
+            self.setProperty('active', False)
         else:
             self.state = {'voltage': state}
-        string = ''
-
-        if 'voltage' in self.state:
-            string += f"{self.state['voltage']} V"
+            magnitude, voltage = parse_units(self.state['voltage'], base_unit='V')
+            string += voltage
             self.setProperty('active', True)
-        else:
-            self.setProperty('active', False)
 
         self.setText(string)
         self.setStyle(self.style())

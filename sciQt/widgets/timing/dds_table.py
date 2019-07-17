@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
 from sciQt.widgets import LabeledEdit, DictDialog
 from sciQt.widgets.timing import IOTable, IOButton
+from sciQt.tools import parse_units
 
 class DDSButton(IOButton):
     ''' A widget which allows specification of a frequency and attenuation via a popup dialog. '''
@@ -12,6 +13,8 @@ class DDSButton(IOButton):
 
     def get_state(self):
         if self.state != {}:
+            if 'frequency' in self.state:
+                self.state['frequency'], freq_string = parse_units(self.state['frequency'], base_unit='Hz')
             return {self.channel: self.state}
         else:
             return {}
@@ -20,7 +23,8 @@ class DDSButton(IOButton):
         self.state = state
         string = ''
         if 'frequency' in state:
-            string += f"{state['frequency']} Hz"
+            magnitude, state['frequency'] = parse_units(state['frequency'], base_unit='Hz')
+            string += f"{state['frequency']}"
         if 'attenuation' in state:
             if 'frequency' in state:
                 string += '\n'

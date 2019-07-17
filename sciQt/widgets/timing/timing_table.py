@@ -4,6 +4,9 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
 from sciQt.widgets import DictMenu, DictDialog
 from sciQt.widgets.timing import TTLTable, DACTable, DDSTable
+from sciQt.tools import parse_units
+import numpy as np
+from PyQt5.QtWidgets import QLineEdit
 
 class CustomHeader(QHeaderView):
     def __init__(self, table):
@@ -48,7 +51,6 @@ class TimingTable(QTableWidget):
     @staticmethod
     def apply_stylesheet(table):
         ''' Applies a generic stylesheet to a target child table. '''
-        sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         stylesheet = f"""
         QTableWidget {{color:"#000000";
                       font-weight: light;
@@ -84,9 +86,11 @@ class TimingTable(QTableWidget):
             a master sequence. '''
         sequence = []
         for col in range(self.columnCount()):
-            duration = float(self.horizontalHeaderItem(col).text().split('\n')[1])
+            duration = self.horizontalHeaderItem(col).text().split('\n')[1]
+            magnitude, duration = parse_units(duration, base_unit='s')
+
             name = self.horizontalHeaderItem(col).text().split('\n')[0]
-            sequence.append({'duration': duration})
+            sequence.append({'duration': magnitude})
             if name != '':
                 sequence[-1]['name'] = name
         for child in self.children:
@@ -140,9 +144,10 @@ class TimingTable(QTableWidget):
             header = ''
             if 'name' in step:
                 header += step['name']
+            magnitude, step['duration'] = parse_units(step['duration'], base_unit='s')
+
             header += '\n' + str(step['duration'])
             labels.append(header)
-        # self.setHorizontalHeaderLabels(['\n'+str(step['duration']) for step in sequence])
         self.setHorizontalHeaderLabels(labels)
 
         for child in self.children:
@@ -160,7 +165,10 @@ class TimingTable(QTableWidget):
         old_name = self.horizontalHeaderItem(index).text().split('\n')[0]
 
         parameters = {'Name': old_name, 'Duration': old_duration}
-        updates, updated = DictDialog(parameters).get_parameters()
+        updates, updated = DictDialog(parameters, units={'Duration': 's'}).get_parameters()
+        # magnitude, updates['Duration'] = parse_units(updates['Duration'], base_unit=s)
+        if 'Name' not in updates:
+            updates['Name'] = ''
         string = f"{updates['Name']}\n{updates['Duration']}"
         if updated:
             self.horizontalHeaderItem(index).setText(string)
