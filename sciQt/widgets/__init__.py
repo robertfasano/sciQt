@@ -4,6 +4,7 @@ from .icon_button import IconButton
 from .parameter_table import ParameterTable
 from .unit_edit import UnitEdit
 from .labeled_widgets import LabeledEdit, LabeledComboBox
+from .parameter_dialog import ParameterDialog
 from .io_button import IOButton
 from .io_table import IOTable
 from .ttl_table import TTLTable
