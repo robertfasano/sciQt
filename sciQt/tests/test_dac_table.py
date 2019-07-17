@@ -1,10 +1,11 @@
 from sciQt import DACTable, Application, TimingTable
 import numpy as np
+from copy import deepcopy
 
 def test_dac_table_set_sequence(qtbot):
     dacs =  [f'A{i}' for i in range(32)]
     sequence = [{'duration': 0.2, 'DAC': {'A0': 1}}, {'duration': 0.5, 'TTL': ['A1']}]
-    timing_table = TimingTable(sequence)
+    timing_table = TimingTable(deepcopy(sequence))
     table = DACTable(timing_table, dacs)
 
     get_sequence = timing_table.get_sequence()
