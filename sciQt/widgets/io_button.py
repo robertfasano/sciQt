@@ -28,16 +28,3 @@ class IOButton(QPushButton):
     @abstractmethod
     def create_event(self):
         raise NotImplementedError
-
-    @abstractmethod
-    def isActive(self):
-        raise NotImplementedError
-
-    class Dialog(QDialog):
-        @abstractmethod
-        def __init__(self, parent):
-            raise NotImplementedError
-
-        @abstractmethod
-        def get_event(self):
-            raise NotImplementedError
