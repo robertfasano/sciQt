@@ -1,23 +1,15 @@
-from PyQt5.QtWidgets import QTableWidget, QPushButton, QDialog, QVBoxLayout, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
-from sciQt.widgets import DictMenu, LabeledEdit
+from sciQt.widgets import LabeledEdit, IOTable, IOButton
 
-class DACButton(QPushButton):
+class DACButton(IOButton):
     ''' A widget which allows specification of a voltage via a popup dialog. '''
-    def __init__(self):
-        QPushButton.__init__(self)
-        self.clicked.connect(self.create_event)
-        self.setFixedSize(75, 30)
-        self.setProperty('active', False)
-        style = '''
-        QPushButton:flat[active=true]{background-color: #00CCCC; border:1px solid black;}
-        QPushButton:flat[active=false]{background-color: #999999; border:1px solid black;}
-        '''
-        self.setStyleSheet(style)
-        self.setFlat(True)
-        self.setAutoFillBackground(True)
+    def __init__(self, channel):
+        IOButton.__init__(self, channel, active_color = '#00CCCC')
+
         self.voltage = ''
+        self.state = {}
+        self.clicked.connect(self.create_event)
 
     def create_event(self):
         ''' Open a dialog to allow user input of a new voltage. '''
@@ -25,11 +17,10 @@ class DACButton(QPushButton):
         voltage, ok = dialog.get_event()
         if not ok:
             return
-
-        self.setProperty('active', voltage != '')
-        self.setText(f'{voltage}')
-
-        self.setStyle(self.style())
+        if voltage == '':
+            self.set_state(None)
+        else:
+            self.set_state(float(voltage))
 
     class Dialog(QDialog):
         ''' A custom dialog box allowing voltage specification. '''
@@ -55,84 +46,33 @@ class DACButton(QPushButton):
             self.parent.voltage = self.input.text()
             return (self.parent.voltage, result == QDialog.Accepted)
 
-class DACTable(QTableWidget):
+    def get_state(self):
+        if self.state != {}:
+            return {self.channel: self.state['voltage']}
+        else:
+            return {}
+
+    def set_state(self, state):
+        ''' Takes a float-valued voltage and stores in a state dictionary '''
+        if state is None:
+            self.state = {}
+        else:
+            self.state = {'voltage': state}
+        string = ''
+
+        if 'voltage' in self.state:
+            string += f"{self.state['voltage']} V"
+            self.setProperty('active', True)
+        else:
+            self.setProperty('active', False)
+
+        self.setText(string)
+        self.setStyle(self.style())
+
+class DACTable(IOTable):
     ''' A table of buttons allowing specification of voltages for each DAC
         in the passed "dacs" list. '''
-    def __init__(self, timing_table, dacs, sequence=None):
-        QTableWidget.__init__(self)
-        self.dacs = dacs
-        self.setShowGrid(False)
-        self.horizontal_margin = 5
-        self.vertical_margin = 5
-        self.verticalHeader().setDefaultSectionSize(30+self.vertical_margin)
-        self.setSelectionMode(self.NoSelection)
-        self.label_width = timing_table.label_width
-        self.verticalHeader().setFixedWidth(self.label_width)
-
-        self.setRowCount(len(self.dacs))
-        self.setVerticalHeaderLabels(self.dacs)
-        self.verticalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-        self.verticalHeader().customContextMenuRequested.connect(self.row_context_menu)
-
-        self.hide_inactive = False
-
-        self.timing_table = timing_table
-        timing_table.register(self)
-
-    def row_context_menu(self, event):
-        actions = {
-                    'Hide inactive': lambda: self.hide_inactive_rows(not self.hide_inactive)
-                    }
-
-        self.menu = DictMenu('header options', actions)
-        self.menu.actions['Hide inactive'].setCheckable(True)
-        self.menu.actions['Hide inactive'].setChecked(self.hide_inactive)
-        self.menu.popup(QCursor.pos())
-
-    def insert_timestep(self, last):
-        self.insertColumn(last)
-        for row in range(self.rowCount()):
-            self.setCellWidget(row, last, DACButton())
-
-    def delete_timestep(self, last):
-        self.removeColumn(last)
-
-    def hide_inactive_rows(self, hidden):
-        self.hide_inactive = hidden
-        for row in range(self.rowCount()):
-            inactive = True
-            for col in range(self.columnCount()):
-                if self.cellWidget(row, col).text() != '':
-                    inactive = False
-            self.setRowHidden(row, False)
-            if inactive:
-                self.setRowHidden(row, hidden)
-
-    def get_sequence(self):
-        sequence = []
-        for i in range(self.columnCount()):
-            timestep = {'duration': self.model.headerData(i, Qt.Horizontal)}
-            dacs = {}
-            for j in range(self.rowCount()):
-                edit = self.cellWidget(j, i)
-                if edit.text() != '':
-                    dacs[self.verticalHeaderItem(j).text()] = float(edit.text())
-            if dacs != {}:
-                timestep['DAC'] = dacs
-            sequence.append(timestep)
-
-        return sequence
-
-    def set_sequence(self, sequence):
-        self.setColumnCount(len(sequence))
-
-        for i, step in enumerate(sequence):
-            for j, dac in enumerate(self.dacs):
-                self.setCellWidget(j, i, DACButton())
-                if 'DAC' in step:
-                    if dac in step['DAC']:
-                        v = step['DAC'][dac]
-                        widget = self.cellWidget(j, i)
-                        widget.setText(f'{v}')
-                        widget.setProperty('active', True)
-                        widget.setStyle(widget.style())
+    def __init__(self, timing_table, dacs):
+        self.channels = dacs
+        self.button_widget = DACButton
+        IOTable.__init__(self, timing_table, dacs, 'DAC')
