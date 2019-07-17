@@ -1,9 +1,13 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QLabel, QDialogButtonBox, QGridLayout
 from PyQt5.QtCore import Qt
+from sciQt.tools import parse_units
 
 class DictDialog(QDialog):
-    def __init__(self, parameters):
+    def __init__(self, parameters, units=None):
         QDialog.__init__(self)
+        if units is None:
+            units = {}
+        self.units = units
         self.setWindowTitle('Edit parameters')
         layout = QGridLayout(self)
         self.edits = {}
@@ -26,5 +30,8 @@ class DictDialog(QDialog):
         result = self.exec_()
         parameters = {}
         for key in self.edits:
-            parameters[key] = self.edits[key].text()
+            if self.edits[key].text() != '':
+                parameters[key] = self.edits[key].text()
+                if key in self.units:
+                    magnitude, parameters[key] = parse_units(parameters[key], self.units[key])
         return (parameters, result == QDialog.Accepted)
