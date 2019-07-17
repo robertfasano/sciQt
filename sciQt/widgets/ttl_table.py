@@ -1,7 +1,21 @@
-from PyQt5.QtWidgets import QTableWidget, QCheckBox, QLineEdit, QInputDialog, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QLineEdit, QInputDialog, QHeaderView, QPushButton
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from sciQt.widgets import DictMenu
+
+class TTLButton(QPushButton):
+    def __init__(self):
+        QPushButton.__init__(self)
+        self.setCheckable(True)
+        self.setChecked(False)
+        self.setFixedSize(75, 30)
+        style = '''
+        QPushButton:flat:checked{background-color: #ffff00; border:1px solid black;}
+        QPushButton:flat{background-color: #999999; border:1px solid black;}
+        '''
+        self.setStyleSheet(style)
+        self.setFlat(True)
+        self.setAutoFillBackground(True)
 
 class TTLTable(QTableWidget):
     ''' A table of checkboxes whose state can be mapped to and from a json-formatted
@@ -43,7 +57,7 @@ class TTLTable(QTableWidget):
         ''' Add a new column of checkboxes '''
         self.insertColumn(col)
         for row in range(len(self.TTLs)):
-            self.setCellWidget(row, col, QCheckBox())
+            self.setCellWidget(row, col, TTLButton())
 
     def delete_timestep(self, col):
         ''' Delete a column '''
@@ -86,7 +100,7 @@ class TTLTable(QTableWidget):
 
         for i, step in enumerate(sequence):
             for j, ttl in enumerate(self.TTLs):
-                self.setCellWidget(j, i, QCheckBox())
+                self.setCellWidget(j, i, TTLButton())
                 if ttl in step['TTL']:
                     self.cellWidget(j,i).setChecked(True)
                 else:

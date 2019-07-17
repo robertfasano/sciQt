@@ -34,7 +34,7 @@ class TimingTable(QTableWidget):
 
     def sizeHint(self):
         ''' Returns a size scaled based on number of columns. '''
-        return QSize(self.columnCount()*(75+self.horizontal_margin)+45+self.label_width,
+        return QSize(self.columnCount()*(75+self.horizontal_margin)+60+self.label_width,
                      400)
 
     def set_sequence(self, sequence):
@@ -122,18 +122,7 @@ class TimingTable(QTableWidget):
     def apply_stylesheet(table):
         ''' Applies a generic stylesheet to a target child table. '''
         sciQt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        unchecked_icon_path = os.path.join(sciQt_path, 'resources/icons/unchecked.png').replace('\\', '/')
-        checked_icon_path = os.path.join(sciQt_path, 'resources/icons/checked.png').replace('\\', '/')
         stylesheet = f"""
-
-        QCheckBox::indicator:unchecked {{
-            image: url({unchecked_icon_path});
-        }}
-
-        QCheckBox::indicator:checked {{
-            image: url({checked_icon_path});
-        }}
-
         QTableWidget {{color:"#000000";
                       font-weight: light;
                       font-family: "Exo 2";
