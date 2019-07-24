@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtWidgets import QToolButton
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon, QPixmap
@@ -28,11 +29,10 @@ class IconButton(QToolButton):
             self.setIcon(self.icon)
 
     def load_file(self, name):
-        existing_icons = {'play': 'outline-play-arrow.svg',
-                          'save': 'content-save-outline.svg',
-                          'load': 'outline-folder_open-24px.svg'}
+        icon_path = os.path.join(sciQt_path, 'resources/icons/')
+        existing_icons = [x.split('.')[0] for x in os.listdir(icon_path)]
         if name in existing_icons:
-            filename = sciQt_path + '/resources/icons/' + existing_icons[name]
+            filename = os.path.join(icon_path, name)
         else:
             filename = name
         return QIcon(filename)
