@@ -25,5 +25,8 @@ class LabeledComboBox(QWidget):
         for w in [self.label, self.box]:
             layout.addWidget(w)
 
+        self.setCurrentIndex = self.box.setCurrentIndex
+        self.currentTextChanged = self.box.currentTextChanged
+        
     def currentText(self):
         return self.box.currentText()
