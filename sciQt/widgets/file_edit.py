@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QFileDialog
-from sciQt.widgets import IconButton 
+from sciQt.widgets import IconButton
 
 class FileEdit(QWidget):
     ''' A line edit with file dialog extension '''
-    def __init__(self, name, default_path, type='file'):
+    def __init__(self, name, default_path, type='file', extension=''):
         QWidget.__init__(self)
         layout = QHBoxLayout(self)
         self.path = default_path
@@ -17,11 +17,13 @@ class FileEdit(QWidget):
         elif type == 'file':
             button = IconButton('load', self.load_file)
         layout.addWidget(button)
+        self.extension = extension
 
     def load_folder(self):
         filename = QFileDialog.getExistingDirectory(self, 'Choose folder', self.path)
         self.edit.setText(filename)
 
     def load_file(self):
-        filename = QFileDialog.getOpenFileName(self, 'Choose file', self.path)[0]
+        filter = f"*{self.extension}"
+        filename = QFileDialog.getOpenFileName(self, 'Choose file', self.path, filter)[0]
         self.edit.setText(filename)
