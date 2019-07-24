@@ -21,9 +21,13 @@ class FileEdit(QWidget):
 
     def load_folder(self):
         filename = QFileDialog.getExistingDirectory(self, 'Choose folder', self.path)
+        if filename == '':
+            return
         self.edit.setText(filename)
 
     def load_file(self):
         filter = f"*{self.extension}"
         filename = QFileDialog.getOpenFileName(self, 'Choose file', self.path, filter)[0]
+        if filename == '':
+            return
         self.edit.setText(filename)
