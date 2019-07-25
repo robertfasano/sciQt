@@ -32,10 +32,10 @@ class IOTable(QTableWidget):
         for col in range(self.columnCount()):
             timestep = {}
             channels = {}
-            if self.io_type in ['TTL', 'ADC']:
+            if self.io_type in ['TTL']:
                 channels = []
             for row in range(self.rowCount()):
-                if self.io_type in ['TTL', 'ADC']:
+                if self.io_type in ['TTL']:
                     channels.extend(self.cellWidget(row, col).get_state())
                 else:
                     channels.update(self.cellWidget(row, col).get_state())
