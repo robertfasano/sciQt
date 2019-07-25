@@ -50,6 +50,5 @@ class DACTable(IOTable):
     ''' A table of buttons allowing specification of voltages for each DAC
         in the passed "dacs" list. '''
     def __init__(self, timing_table, dacs):
-        self.channels = dacs
         self.button_widget = DACButton
         IOTable.__init__(self, timing_table, dacs, 'DAC')

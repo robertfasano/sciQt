@@ -11,6 +11,8 @@ class TTLButton(IOButton):
         self.toggled.connect(self.set_state)
 
     def get_state(self):
+        ''' Returns a list containing either the channel name if checked or nothing
+            if unchecked. '''
         if self.isChecked():
             return [self.channel]
         else:
@@ -24,7 +26,6 @@ class TTLTable(IOTable):
     ''' A table of checkboxes whose state can be mapped to and from a json-formatted
         sequence representation. '''
     def __init__(self, timing_table, ttls):
-        self.channels = ttls
         self.button_widget = TTLButton
         IOTable.__init__(self, timing_table, ttls, 'TTL')
 

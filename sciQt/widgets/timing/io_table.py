@@ -6,6 +6,7 @@ from sciQt.widgets import DictMenu
 class IOTable(QTableWidget):
     def __init__(self, timing_table, channels, io_type):
         QTableWidget.__init__(self)
+        self.channels = channels
         self.setRowCount(len(channels))
         self.setVerticalHeaderLabels(channels)
         self.timing_table = timing_table

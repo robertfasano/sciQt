@@ -12,6 +12,9 @@ class DDSButton(IOButton):
         self.state = {}
 
     def get_state(self):
+        ''' Returns a dictionary representing the event state with magnitude scaled
+            to the base unit. For example, if the button reads '100 MHz', then this
+            method will return {'frequency': 100e6}. '''
         if self.state != {}:
             if 'frequency' in self.state:
                 self.state['frequency'], freq_string = parse_units(self.state['frequency'], base_unit='Hz')
@@ -20,6 +23,9 @@ class DDSButton(IOButton):
             return {}
 
     def set_state(self, state):
+        ''' Takes a state dictionary of the form {'frequency': 100e6, 'attenuation': 3}
+            and displays a unitful string converted to the most compact representation -
+            for example, 100e6 is converted to '100 MHz'. '''
         self.state = state
         string = ''
         if 'frequency' in state:
@@ -47,7 +53,6 @@ class DDSTable(IOTable):
     ''' A table of buttons allowing specification of settings for each DDS
         in the passed "dds" list. '''
     def __init__(self, timing_table, dds):
-        self.channels = dds
         self.button_widget = DDSButton
         IOTable.__init__(self, timing_table, dds, 'DDS')
         self.verticalHeader().setDefaultSectionSize(50+self.vertical_margin)
