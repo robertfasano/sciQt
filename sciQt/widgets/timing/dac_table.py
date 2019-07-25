@@ -5,7 +5,6 @@ from sciQt.widgets.timing import IOTable, IOButton
 from sciQt.tools import parse_units
 
 
-
 class DACButton(IOButton):
     ''' A widget which allows specification of a voltage via a popup dialog. '''
     def __init__(self, channel):
@@ -22,7 +21,10 @@ class DACButton(IOButton):
         state, updated = DictDialog(state).get_parameters()
         if not updated:
             return
-        self.set_state(state['voltage'])
+        if state == {}:
+            self.set_state('')
+        else:
+            self.set_state(state['voltage'])
 
     def get_state(self):
         if self.state != {}:
