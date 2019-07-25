@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QTableWidget, QTabWidget, QTableWidgetItem, QHeaderV
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QCursor, QFont
 from sciQt.widgets import DictMenu, DictDialog
-from sciQt.widgets.timing import TTLTable, DACTable, DDSTable
+from sciQt.widgets.timing import TTLTable, DACTable, DDSTable, ADCTable
 from sciQt.tools import parse_units
 import numpy as np
 from PyQt5.QtWidgets import QLineEdit
@@ -27,7 +27,7 @@ class CustomHeader(QHeaderView):
 class TimingTable(QTableWidget):
     ''' A master timing table which shares timestep information and basic
         functionalities with child i/o tables (e.g. TTLTable). '''
-    def __init__(self, sequence, ttls=None, dacs=None, dds=None):
+    def __init__(self, sequence, ttls=None, dacs=None, dds=None, adcs=None):
         QTableWidget.__init__(self)
         self.children = []
         self.set_sequence(sequence)
@@ -41,6 +41,9 @@ class TimingTable(QTableWidget):
         if ttls is not None:
             self.ttl_table = TTLTable(self, ttls)
             self.tabs.addTab(self.ttl_table, 'TTL')
+        if adcs is not None:
+            self.adc_table = ADCTable(self, adcs)
+            self.tabs.addTab(self.adc_table, 'ADC')
         if dacs is not None:
             self.dac_table = DACTable(self, dacs)
             self.tabs.addTab(self.dac_table, 'DAC')
