@@ -1,3 +1,12 @@
+''' The TTLTable is a child class of IOTable, providing a grid for defining
+    TTL pulse patterns. Each item in the grid is a TTLButton, a toggleable
+    button with a channel attribute. When a TTLButton is queried for its state,
+    it returns either [self.channel] (if active) or [] (if inactive).
+
+    A timestep in a sequence might contain a TTL field like 'TTL': ['A0', 'A1'],
+    which indicates that channels A0 and A1 should be high, while all other channels
+    should be low.
+'''
 from PyQt5.QtGui import QCursor
 from sciQt.widgets import DictMenu
 from sciQt.widgets.timing import IOTable, IOButton

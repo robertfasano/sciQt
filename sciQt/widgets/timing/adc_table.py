@@ -1,3 +1,21 @@
+''' The ADCTable is a child class of IOTable, providing a grid for defining
+    sequences of analog input events. Each item in the grid is a TTLButton, a
+    toggleable button with a channel attribute. When a TTLButton is queried for
+    its state, it returns either [self.channel] (if active) or [] (if inactive).
+
+    A timestep in a sequence might contain an ADC field like 'ADC': ['A0', 'A1'],
+    which indicates that channels A0 and A1 should be measured, while all other
+    channels are not measured.
+
+    Note that the Sampler ADC only supports measurement of all 8 channels
+    simultaneously, so all channels will be measured if just one is toggled.
+    However, in a future update, data from unselected channels will be discarded
+    before analysis.
+
+    The sampling rate is currently set internally to be once per ms. In a future
+    update, a new ADCButton class will be added, which will allow the user to
+    define the sampling rate for each timestep. 
+'''
 from PyQt5.QtGui import QCursor
 from sciQt.widgets import DictMenu
 from sciQt.widgets.timing import IOTable, IOButton

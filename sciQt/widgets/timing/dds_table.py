@@ -1,3 +1,17 @@
+''' The DDSTable is a child class of IOTable, providing a grid for defining
+    sequences of DDS frequency and attenuation updates. Each item in the grid is
+    a DDSButton which, when clicked, opens a dialog box allowing the user to set
+    a frequency and/or attenuation update for the step. These values remain
+    constant until another DDS event is reached. When a DDSButton is queried for
+    its state, it returns a dictionary like {'frequency': 1e6, 'attenuation': 3},
+    indicating a frequency update of 100 MHz and an attenuation update of 3 dB
+    (half of full power).
+
+    A timestep in a sequence might contain a DDS field like
+    'DDS': {'A0': {'frequency': 100e6, 'attenuation': 3}, 'A1': {'frequency': 1e6}},
+    indicating that channel A0 should be updated to 100 MHz and 3 dB attenuation,
+    while channel A1 should be updated to 1 MHz. All other channels are unaffected.
+'''
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
 from sciQt.widgets import LabeledEdit, DictDialog

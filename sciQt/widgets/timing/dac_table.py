@@ -1,3 +1,14 @@
+''' The DACTable is a child class of IOTable, providing a grid for defining
+    sequences of analog voltage outputs. Each item in the grid is a DACButton
+    which, when clicked, opens a dialog box allowing the user to set a voltage.
+    Set voltages remain constant until another DAC event is reached. When a
+    DACButton is queried for its state, it returns a dictionary like {'voltage': 3}
+    indicating a 3 V setpoint.
+
+    A timestep in a sequence might contain a DAC field like 'DAC': {'A0': 0, 'A1': 1},
+    indicating that channel A0 should be updated to 0 V, channel A1 should be
+    updated to 1 V, and all other channels should be unchanged. 
+'''
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtCore import Qt
 from sciQt.widgets import LabeledEdit, DictDialog
