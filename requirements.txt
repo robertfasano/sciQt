@@ -3,4 +3,4 @@ requests
 pint
 numpy
 pytest-qt
-yaml
+pyyaml
