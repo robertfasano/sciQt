@@ -4,17 +4,18 @@ from sciQt import path as sciQt_path
 
 import yaml
 import os
-with open(os.path.join(sciQt_path, 'config.yml')) as file:
-    palette = yaml.load(file, Loader=yaml.SafeLoader)['palette']
+with open(os.path.join(sciQt_path, 'palette.yml')) as file:
+    palette = yaml.load(file, Loader=yaml.SafeLoader)
 
 class ColorLabel(QLabel):
-    def __init__(self, text, red = '#FF0000', blue='#0000FF', green='#00FF00'):
+    def __init__(self, text):
         super().__init__(text)
-
-        style = f'QLabel[color="red"] {{ background-color : {palette["red"]}; }}\n'
-        style += f'QLabel[color="blue"] {{ background-color : {palette["blue"]}; }}\n'
-        style += f'QLabel[color="green"] {{ background-color : {palette["green"]}; }}\n'
-
+        self.setAlignment(Qt.AlignCenter)
+        style = ''
+        for category in palette:
+            for color, hex in palette[category].items():
+                name = f'{category}: {color}'
+                style += f'QLabel[color="{name}"] {{ background-color : {hex}; }}\n'
         self.setStyleSheet(style)
 
     def setColor(self, color):

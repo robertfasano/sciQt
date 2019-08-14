@@ -1,0 +1,13 @@
+primary:
+  blue: '#0052CC'
+  dark blue: '#172B4D'
+  white: '#FFFFFF'
+secondary:
+  light blue: '#00B8D9'
+  orange: '#FF5630'
+  yellow: '#FF1B00'
+  green: '#36B37E'
+  purple: '#6554C0'
+extended:
+  red: '#BF2600'
+  green: '#006644'
