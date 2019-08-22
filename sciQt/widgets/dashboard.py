@@ -7,6 +7,8 @@ import os
 from abc import abstractmethod
 from sciQt import Application, path as sciQt_path
 
+from .palette import palette
+
 class Frame():
     def __init__(self, parent_layout):
         self.frame = QFrame()
@@ -26,7 +28,9 @@ class Dashboard(QMainWindow):
                 port (int): port for the backend server
         '''
         self.app = Application()
+        self.app.setPalette(palette)
         super(Dashboard, self).__init__()
+
         self.widget = QWidget()
         self.layout = QVBoxLayout(self.widget)
         self.setCentralWidget(self.widget)
@@ -35,9 +39,6 @@ class Dashboard(QMainWindow):
         self.setWindowTitle(title)
         QFontDatabase.addApplicationFont('resources/fonts/Exo2-Light.ttf')
 
-        stylesheet_path = sciQt_path + '/resources/stylesheets/dashboard.txt'
-        with open(stylesheet_path, "r") as file:
-            self.setStyleSheet(file.read())
 
         if os.name == 'nt':
             import ctypes

@@ -11,9 +11,6 @@ from sciQt import path as sciQt_path
 class DictTable(QTableWidget):
     def __init__(self, parameters = {}):
         QTableWidget.__init__(self)
-        stylesheet_path = sciQt_path + '/resources/stylesheets/dict_table.txt'
-        with open(stylesheet_path, "r") as file:
-            self.setStyleSheet(file.read())
         self.insertColumn(0)
         self.insertColumn(1)
         self.setHorizontalHeaderLabels(['Parameter', 'Value'])
