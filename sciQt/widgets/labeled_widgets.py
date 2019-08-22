@@ -10,6 +10,8 @@ class LabeledEdit(QWidget):
         for w in [self.label, self.edit]:
             layout.addWidget(w)
 
+        self.textChanged = self.edit.textChanged
+
     def text(self):
         return self.edit.text()
 
@@ -27,6 +29,6 @@ class LabeledComboBox(QWidget):
 
         self.setCurrentIndex = self.box.setCurrentIndex
         self.currentTextChanged = self.box.currentTextChanged
-        
+
     def currentText(self):
         return self.box.currentText()

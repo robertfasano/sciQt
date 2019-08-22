@@ -12,6 +12,15 @@ def loadPalette(self):
             style += f'QLabel[color="{name}"] {{ background-color : {hex}; }}\n'
     self.setStyleSheet(style)
 
+def load_palette_options():
+    with open(os.path.join(sciQt_path, 'palette.yml')) as file:
+        palette = yaml.load(file, Loader=yaml.SafeLoader)
+    options = []
+    for category in palette:
+        for color, hex in palette[category].items():
+            options.append(f'{category}: {color}')
+    return options
+
 def setColor(self, color):
     self.setProperty('color', color)
     self.style().unpolish(self)

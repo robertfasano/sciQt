@@ -27,8 +27,9 @@ class CustomHeader(QHeaderView):
 class TimingTable(QTableWidget):
     ''' A master timing table which shares timestep information and basic
         functionalities with child i/o tables (e.g. TTLTable). '''
-    def __init__(self, sequence, ttls=None, dacs=None, dds=None, adcs=None):
+    def __init__(self, sequence, ttls=None, dacs=None, dds=None, adcs=None, time_unit='s'):
         QTableWidget.__init__(self)
+        self.time_unit = time_unit
         self.children = []
         self.set_sequence(sequence)
         self.horizontal_margin = 5
@@ -167,8 +168,8 @@ class TimingTable(QTableWidget):
         old_duration = self.horizontalHeaderItem(index).text().split('\n')[1]
         old_name = self.horizontalHeaderItem(index).text().split('\n')[0]
 
-        parameters = {'Name': old_name, 'Duration': old_duration}
-        updates, updated = DictDialog(parameters, units={'Duration': 's'}).get_parameters()
+        parameters = {'Duration': old_duration, 'Name': old_name}
+        updates, updated = DictDialog(parameters, units={'Duration': self.time_unit}).get_parameters()
         # magnitude, updates['Duration'] = parse_units(updates['Duration'], base_unit=s)
         if 'Name' not in updates:
             updates['Name'] = ''
