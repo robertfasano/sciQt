@@ -27,7 +27,7 @@ class DictDialog(QDialog):
 
     def get_parameters(self):
         ''' Open a window, wait for user input, and return the result. '''
-        result = self.exec_()
+        result = self.exec_params()
         parameters = {}
         for key in self.edits:
             if self.edits[key].text() != '':
@@ -35,3 +35,7 @@ class DictDialog(QDialog):
                 if key in self.units:
                     magnitude, parameters[key] = parse_units(parameters[key], self.units[key])
         return (parameters, result == QDialog.Accepted)
+
+    def exec_params(self):
+        self.edits[list(self.edits.keys())[0]].selectAll()
+        return self.exec_()
