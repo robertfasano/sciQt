@@ -1,13 +1,14 @@
 ''' This script gives a template for a PyQt5 application and showcases the widgets
     included in the sciQt package. '''
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMenuBar, QMenu, QFrame
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFontDatabase, QFont
 import requests
 import os
 from abc import abstractmethod
 from sciQt import Application, path as sciQt_path
 
 from .palette import palette
+
 
 class Frame():
     def __init__(self, parent_layout):
@@ -37,8 +38,8 @@ class Dashboard(QMainWindow):
 
         ## set window style
         self.setWindowTitle(title)
-        QFontDatabase.addApplicationFont('resources/fonts/Exo2-Light.ttf')
-
+        font = QFont('Roboto')
+        self.app.setFont(font)
 
         if os.name == 'nt':
             import ctypes
